@@ -1,0 +1,10 @@
+# takicom_v2/.htaccess
+
+# Interdire l'accès direct aux dossiers sensibles
+RewriteEngine On
+
+# Bloquer l'accès à tous les dossiers sauf public/
+RewriteRule ^(app|core|config|helpers|vendor|storage|logs|composer\..*|\.env) - [R=403,L]
+
+# Rediriger toutes les requêtes vers public/
+RewriteRule ^(.*)$ public/$1 [L]

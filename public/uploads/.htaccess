@@ -1,0 +1,11 @@
+# Autoriser l'accès aux fichiers
+Require all granted
+Options -Indexes
+
+# Types de fichiers autorisés
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Header set Content-Type "image/jpeg"
+    Header set Content-Type "image/png"
+    Header set Content-Type "image/gif"
+    Header set Content-Type "image/webp"
+</FilesMatch>

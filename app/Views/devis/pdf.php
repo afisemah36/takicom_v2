@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis <?= e($devis->numero_devis) ?></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .entreprise {
+            width: 45%;
+        }
+
+        .entreprise h1 {
+            color: #3498db;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .entreprise p {
+            margin: 3px 0;
+            font-size: 11px;
+        }
+
+        .devis-info {
+            width: 45%;
+            text-align: right;
+        }
+
+        .devis-numero {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .devis-info p {
+            margin: 5px 0;
+        }
+
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .client-info {
+            width: 45%;
+            background: #e8f4fd;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .client-info h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .client-info p {
+            margin: 3px 0;
+            font-size: 11px;
+        }
+
+        .devis-details {
+            width: 45%;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table th {
+            background: #e8f4fd;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+            border: 1px solid #ddd;
+        }
+
+        .details-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 11px;
+        }
+
+        .lignes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .lignes-table thead th {
+            background: #3498db;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .lignes-table tbody td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            font-size: 11px;
+        }
+
+        .lignes-table tbody tr:hover {
+            background: #e8f4fd;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .totaux {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+
+        .totaux-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .totaux-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .totaux-table .label {
+            text-align: right;
+            font-weight: normal;
+            width: 60%;
+        }
+
+        .totaux-table .montant {
+            text-align: right;
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .total-ttc {
+            background: #3498db;
+            color: white;
+            font-size: 16px;
+        }
+
+        .notes {
+            clear: both;
+            margin-top: 40px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+
+        .notes h4 {
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e8f4fd;
+            text-align: center;
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+
+        .statut-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .statut-brouillon {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .statut-en_attente {
+            background: #f39c12;
+            color: white;
+        }
+
+        .statut-accepte {
+            background: #27ae60;
+            color: white;
+        }
+
+        .statut-refuse {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .statut-converti {
+            background: #3498db;
+            color: white;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <div class="entreprise">
+                <h1><?= e($entreprise->raison_sociale ?? 'Entreprise') ?></h1>
+                <?php if (!empty($entreprise->adresse)): ?>
+                    <p><?= e($entreprise->adresse) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($entreprise->code_postal) || !empty($entreprise->ville)): ?>
+                    <p><?= e($entreprise->code_postal) ?> <?= e($entreprise->ville) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($entreprise->telephone)): ?>
+                    <p>Tél: <?= e($entreprise->telephone) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($entreprise->email)): ?>
+                    <p>Email: <?= e($entreprise->email) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($entreprise->matricule_fiscale)): ?>
+                    <p>MF: <?= e($entreprise->matricule_fiscale) ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="devis-info">
+                <div class="devis-numero">
+                    DEVIS N° <?= e($devis->numero_devis) ?>
+                </div>
+                <p>
+                    <span class="statut-badge statut-<?= e($devis->statut) ?>">
+                        <?= e(ucfirst($devis->statut)) ?>
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Informations Client et Devis -->
+        <div class="parties">
+            <div class="client-info">
+                <h3>CLIENT</h3>
+                <p><strong><?= e($devis->raison_sociale ?: ($devis->nom . ' ' . $devis->prenom)) ?></strong></p>
+                <?php if (!empty($devis->adresse)): ?>
+                    <p><?= nl2br(e($devis->adresse)) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($devis->code_postal) || !empty($devis->ville)): ?>
+                    <p><?= e($devis->code_postal) ?> <?= e($devis->ville) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($devis->telephone)): ?>
+                    <p>Tél: <?= e($devis->telephone) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($devis->email)): ?>
+                    <p>Email: <?= e($devis->email) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($devis->matricule_fiscale)): ?>
+                    <p>MF: <?= e($devis->matricule_fiscale) ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="devis-details">
+                <table class="details-table">
+                    <tr>
+                        <th>Date de devis</th>
+                        <td><?= formatDate($devis->date_devis) ?></td>
+                    </tr>
+                    <tr>
+                        <th>Date de validité</th>
+                        <td><?= formatDate($devis->date_validite) ?></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Lignes de devis -->
+        <table class="lignes-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 35%;">Désignation</th>
+                    <th style="width: 10%;" class="text-center">Qté</th>
+                    <th style="width: 15%;" class="text-right">Prix HT</th>
+                    <th style="width: 10%;" class="text-center">TVA</th>
+                    <th style="width: 10%;" class="text-center">Remise</th>
+                    <th style="width: 15%;" class="text-right">Total TTC</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($lignes as $index => $ligne): ?>
+                    <tr>
+                        <td class="text-center"><?= $index + 1 ?></td>
+                        <td>
+                            <?php if (!empty($ligne->reference)): ?>
+                                <small style="color: #7f8c8d;"><?= e($ligne->reference) ?></small><br>
+                            <?php endif; ?>
+                            <strong><?= e($ligne->designation) ?></strong>
+                        </td>
+                        <td class="text-center"><?= $ligne->quantite ?></td>
+                        <td class="text-right"><?= formatMoney($ligne->prix_unitaire_ht) ?></td>
+                        <td class="text-center"><?= $ligne->taux_tva ?>%</td>
+                        <td class="text-center"><?= $ligne->taux_remise ?>%</td>
+                        <td class="text-right"><strong><?= formatMoney($ligne->montant_ttc) ?></strong></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- Totaux -->
+        <div class="totaux">
+            <table class="totaux-table">
+                <tr>
+                    <td class="label">Total HT</td>
+                    <td class="montant"><?= formatMoney($devis->montant_ht) ?></td>
+                </tr>
+                <?php if ($devis->total_remise > 0): ?>
+                    <tr>
+                        <td class="label">Remise</td>
+                        <td class="montant" style="color: #e74c3c;">- <?= formatMoney($devis->total_remise) ?></td>
+                    </tr>
+                <?php endif; ?>
+                <tr>
+                    <td class="label">Total TVA</td>
+                    <td class="montant"><?= formatMoney($devis->montant_tva) ?></td>
+                </tr>
+                <tr class="total-ttc">
+                    <td class="label">TOTAL TTC</td>
+                    <td class="montant"><?= formatMoney($devis->montant_ttc) ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Notes -->
+        <?php if (!empty($devis->notes)): ?>
+            <div class="notes">
+                <h4>Notes</h4>
+                <p><?= nl2br(e($devis->notes)) ?></p>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($devis->conditions)): ?>
+            <div class="notes">
+                <h4>Conditions</h4>
+                <p><?= nl2br(e($devis->conditions)) ?></p>
+            </div>
+        <?php endif; ?>
+
+        <!-- Pied de page -->
+        <div class="footer">
+            <p><?= e($entreprise->raison_sociale ?? 'Entreprise') ?> - Devis généré le <?= date('d/m/Y à H:i') ?></p>
+            <p><strong>Ce devis est valable jusqu'au <?= formatDate($devis->date_validite) ?></strong></p>
+            <?php if (!empty($entreprise->site_web)): ?>
+                <p><?= e($entreprise->site_web) ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <script>
+        // Imprimer automatiquement au chargement
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>

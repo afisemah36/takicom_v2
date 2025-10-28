@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# Redirection vers HTTPS (optionnel)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST%}/$1 [R=301,L]
+
+# Si le fichier ou dossier existe, le servir directement
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Sinon, rediriger vers index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Désactiver l'affichage des fichiers
+Options -Indexes
+
+# Protection des fichiers sensibles
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

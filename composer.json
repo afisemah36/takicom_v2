@@ -1,0 +1,9 @@
+{
+  "name": "takicom/takicom",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Core\\": "core/"
+    }
+  }
+}
